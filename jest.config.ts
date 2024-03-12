@@ -102,7 +102,7 @@ const config: Config = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  preset: "ts-jest",
+  // preset: undefined,
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -155,10 +155,9 @@ const config: Config = {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  // testMatch: [
-  //   "**/__tests__/**/*.[jt]s?(x)",
-  //   "**/?(*.)+(spec|test).[tj]s?(x)"
-  // ],
+  testMatch: [
+    "**/src/**/*.spec.ts", // Procura por arquivos de teste com extensão .spec.ts dentro da pasta src e suas subpastas
+  ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
@@ -175,7 +174,9 @@ const config: Config = {
   // testRunner: "jest-circus/runner",
 
   // A map from regular expressions to paths to transformers
-  transform: {},
+  transform: {
+    "^.+\\.ts?$": "ts-jest",
+  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [
