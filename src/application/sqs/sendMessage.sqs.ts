@@ -1,8 +1,7 @@
 import { createSQSClient } from "../../infrastructure/aws/aws.config";
 import TransactionDTO from "../services/transaction/transaction.dto";
-import { Response } from "express";
 
-export default function SendMessageSQS(data: TransactionDTO, res: Response) {
+export default function SendMessageSQS(data: TransactionDTO) {
   const transaction = data;
 
   const sqs = createSQSClient();

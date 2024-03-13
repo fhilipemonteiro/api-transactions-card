@@ -45,7 +45,7 @@ export default class TransactionService {
     };
 
     try {
-      await SendMessageSQS(transaction, res);
+      await SendMessageSQS(transaction);
       return res.status(200).send();
     } catch (err) {
       return res.status(500).json({ error: err });
