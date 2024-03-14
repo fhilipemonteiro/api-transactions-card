@@ -12,5 +12,17 @@ route.post("/payments/card", async (req, res) => {
     type: body.type,
   };
 
-  await TransactionService.create(params, res);
+  const transactionService = new TransactionService();
+
+  const result = transactionService.create(params, res);
+
+  return result;
+});
+
+route.get("/payments/card", async (req, res) => {
+  const transactionService = new TransactionService();
+
+  const result = transactionService.findAll(res);
+
+  return result;
 });

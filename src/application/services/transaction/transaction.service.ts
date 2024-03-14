@@ -1,11 +1,24 @@
 import TransactionCard from "../../../domain/transaction/entity/transaction-card";
+import TransactionRepository from "../../../infrastructure/repository/transaction.repository";
 import SendMessageSQS from "../../sqs/sendMessage.sqs";
 import TransactionDTO from "./transaction.dto";
 import { Response } from "express";
 import { v4 as uuid } from "uuid";
 
+interface TransactionCardInterface {
+  idempotencyId: string;
+  amount: number;
+  type: string;
+}
+
 export default class TransactionService {
-  public static async create(data: TransactionDTO, res: Response) {
+  private readonly transactionRepository: TransactionRepository;
+
+  constructor() {
+    this.transactionRepository = new TransactionRepository();
+  }
+
+  public async create(data: TransactionDTO, res: Response) {
     if (data.amount === undefined) {
       return res.status(400).json({
         message: "amount is required",
@@ -21,8 +34,6 @@ export default class TransactionService {
         message: "type is required",
       });
     } else if (typeof data.type !== "string") {
-      console.log(typeof data.type);
-
       return res.status(400).json({
         message: "type must be a string",
       });
@@ -49,6 +60,16 @@ export default class TransactionService {
       return res.status(200).send();
     } catch (err) {
       return res.status(500).json({ error: err });
+    }
+  }
+
+  public async findAll(res: Response): Promise<TransactionDTO[] | Response> {
+    try {
+      const transactions: TransactionDTO[] =
+        await this.transactionRepository.findAll();
+      return res.status(200).json(transactions);
+    } catch (error) {
+      return res.status(500).send();
     }
   }
 }
