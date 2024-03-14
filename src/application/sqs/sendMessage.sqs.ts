@@ -1,10 +1,10 @@
-import { createSQSClient } from "../../infrastructure/aws/aws.config";
+import { Sqs } from "../../infrastructure/config/aws/aws.config";
 import TransactionDTO from "../services/transaction/transaction.dto";
 
 export default function SendMessageSQS(data: TransactionDTO) {
   const transaction = data;
 
-  const sqs = createSQSClient();
+  const sqs = Sqs();
 
   const queueUrl = `https://sqs.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_ACCOUNT_ID}/${process.env.SQS_QUEUE_NAME}`;
 

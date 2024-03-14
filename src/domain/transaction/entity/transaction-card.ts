@@ -1,7 +1,7 @@
 export default class TransactionCard {
-  _idempotencyId: string;
-  _amount: number;
-  _type: string;
+  private _idempotencyId: string;
+  private _amount: number;
+  private _type: string;
 
   constructor(idempotencyId: string, amount: number, type: string) {
     this._idempotencyId = idempotencyId;
