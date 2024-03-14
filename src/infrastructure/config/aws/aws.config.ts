@@ -8,7 +8,12 @@ export function configureAWS() {
   });
 }
 
-export function createSQSClient() {
+export function Sqs() {
   const sqs = new AWS.SQS();
   return sqs;
+}
+
+export function DynamoDB() {
+  const dynamoDB = new AWS.DynamoDB.DocumentClient();
+  return dynamoDB;
 }
