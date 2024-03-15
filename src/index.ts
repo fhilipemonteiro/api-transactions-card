@@ -1,10 +1,12 @@
 import Express, { json } from "express";
+import cors from "cors";
 import { route } from "./application/http/transaction/transaction.route";
 import "dotenv/config";
 
 const app = Express();
 
 app.use(json());
+app.use(cors());
 
 app.use(route);
 
