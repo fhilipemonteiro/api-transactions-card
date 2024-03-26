@@ -1,5 +1,5 @@
 export default interface TransactionDTO {
-  idempotencyId?: string;
+  idempotencyId: string;
   amount: number;
   type: string;
 }

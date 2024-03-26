@@ -1,18 +1,20 @@
-import TransactionCard from "../../../domain/transaction/entity/transaction-card";
+import TransactionCardFactory from "../../../domain/transaction/factory/transaction-card.factory";
 import TransactionRepository from "../../../infrastructure/repository/transaction.repository";
 import SendMessageSQS from "../../sqs/sendMessage.sqs";
+import TransactionInputDTO from "./transaction-input.dto";
 import TransactionDTO from "./transaction.dto";
 import { Response } from "express";
-import { v4 as uuid } from "uuid";
 
 export default class TransactionService {
   private readonly transactionRepository: TransactionRepository;
+  private readonly transactionCardFactory: TransactionCardFactory;
 
   constructor() {
     this.transactionRepository = new TransactionRepository();
+    this.transactionCardFactory = new TransactionCardFactory();
   }
 
-  public async create(data: TransactionDTO, res: Response) {
+  public async create(data: TransactionInputDTO, res: Response) {
     if (data.amount === undefined) {
       return res.status(400).json({
         message: "amount is required",
@@ -37,8 +39,7 @@ export default class TransactionService {
       });
     }
 
-    const { idempotencyId, amount, type } = new TransactionCard(
-      uuid(),
+    const { idempotencyId, amount, type } = this.transactionCardFactory.create(
       data.amount,
       data.type
     );

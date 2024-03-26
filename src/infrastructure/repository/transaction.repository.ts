@@ -1,11 +1,17 @@
-import TransactionDTO from "../../application/services/transaction/transaction.dto";
-import TransactionCard from "../../domain/transaction/entity/transaction-card";
+import TransactionOutputDTO from "../../application/services/transaction/transaction.dto";
+import TransactionCardFactory from "../../domain/transaction/factory/transaction-card.factory";
 import { DynamoDB } from "../config/aws/aws.config";
 
 export default class TransactionRepository {
+  private readonly transactionCardFactory: TransactionCardFactory;
+
+  constructor() {
+    this.transactionCardFactory = new TransactionCardFactory();
+  }
+
   db = DynamoDB();
 
-  async findAll(): Promise<TransactionDTO[]> {
+  async findAll(): Promise<TransactionOutputDTO[]> {
     try {
       const params = {
         TableName: process.env.DDB_TABLE_NAME || "card-transactions",
@@ -17,9 +23,9 @@ export default class TransactionRepository {
         return [];
       }
 
-      const result: TransactionDTO[] = Items?.map((item) => {
-        const { idempotencyId, amount, type } = item;
-        const transaction = new TransactionCard(idempotencyId, amount, type);
+      const result: TransactionOutputDTO[] = Items?.map((item) => {
+        const { amount, type } = item;
+        const transaction = new TransactionCardFactory().create(amount, type);
         return {
           idempotencyId: transaction.idempotencyId,
           amount: transaction.amount,
