@@ -5,12 +5,6 @@ import TransactionDTO from "./transaction.dto";
 import { Response } from "express";
 import { v4 as uuid } from "uuid";
 
-interface TransactionCardInterface {
-  idempotencyId: string;
-  amount: number;
-  type: string;
-}
-
 export default class TransactionService {
   private readonly transactionRepository: TransactionRepository;
 
