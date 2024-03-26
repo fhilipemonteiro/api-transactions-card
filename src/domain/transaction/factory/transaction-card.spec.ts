@@ -1,4 +1,3 @@
-import TransactionCard from "../entity/transaction-card";
 import TransactionCardFactory from "./transaction-card.factory";
 
 describe("Transaction factory unit tests", () => {
