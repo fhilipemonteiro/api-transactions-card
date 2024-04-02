@@ -11,4 +11,4 @@ services:
       - "3000:3000"
     volumes:
       - ./:/usr/src/app
-    command: ["yarn", "start:dev"]
+    command: ["yarn", "start"]

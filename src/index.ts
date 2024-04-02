@@ -1,15 +1,38 @@
-import Express, { json } from "express";
+import cluster from "cluster";
+import { availableParallelism } from "node:os";
+import Express from "express";
+import { json } from "express";
 import cors from "cors";
 import { route } from "./application/http/transaction/transaction.route";
 import "dotenv/config";
 
-const app = Express();
+const PORT = process.env.PORT_SERVER || 3000;
 
-app.use(json());
-app.use(cors());
+const numCPUs = availableParallelism();
 
-app.use(route);
+if (cluster.isPrimary) {
+  console.log(`Master ${process.pid} is running`);
 
-app.listen(process.env.PORT_SERVER || 3000, () => {
-  console.log(`Server running on port ${process.env.PORT_SERVER || 3000}.`);
-});
+  // Fork workers
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on("exit", (worker, code, signal) => {
+    console.log(`Worker ${worker.process.pid} died`);
+  });
+} else {
+  // Worker - Initialize Express server
+  const app = Express();
+
+  app.use(json());
+  app.use(cors());
+
+  app.use(route);
+
+  app.listen(PORT, () => {
+    console.log(
+      `Worker ${process.pid} started. Server running on port ${PORT}.`
+    );
+  });
+}

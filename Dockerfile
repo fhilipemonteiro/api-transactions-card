@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM --platform=linux/arm64 node:alpine
 
 RUN apk add --no-cache yarn
 
