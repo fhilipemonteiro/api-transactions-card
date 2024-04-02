@@ -1,15 +1,16 @@
 import TransactionOutputDTO from "../../application/services/transaction/transaction.dto";
 import TransactionCardFactory from "../../domain/transaction/factory/transaction-card.factory";
-import { DynamoDB } from "../config/aws/aws.config";
+import { dynamoClient } from "../config/aws/aws.config";
+import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 
 export default class TransactionRepository {
   private readonly transactionCardFactory: TransactionCardFactory;
+  private readonly db: DynamoDBClient;
 
   constructor() {
     this.transactionCardFactory = new TransactionCardFactory();
+    this.db = dynamoClient;
   }
-
-  db = DynamoDB();
 
   async findAll(): Promise<TransactionOutputDTO[]> {
     try {
@@ -17,15 +18,25 @@ export default class TransactionRepository {
         TableName: process.env.DDB_TABLE_NAME || "card-transactions",
       };
 
-      const { Items } = await this.db.scan(params).promise();
+      const command = new ScanCommand(params);
+
+      const { Items } = await this.db.send(command);
 
       if (!Items || Items.length === 0) {
         return [];
       }
 
-      const result: TransactionOutputDTO[] = Items?.map((item) => {
-        const { amount, type } = item;
-        const transaction = new TransactionCardFactory().create(amount, type);
+      const result: TransactionOutputDTO[] = Items.map((item: any) => {
+        const { idempotencyId, amount, type } = item;
+
+        const amountValue = Number(amount.N);
+        const typeValue = type.S;
+
+        const transaction = new TransactionCardFactory().create(
+          amountValue,
+          typeValue
+        );
+
         return {
           idempotencyId: transaction.idempotencyId,
           amount: transaction.amount,

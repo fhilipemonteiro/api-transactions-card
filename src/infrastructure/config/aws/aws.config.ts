@@ -1,19 +1,14 @@
-import AWS from "aws-sdk";
+import { DynamoDBClient, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
+import { SQSClient, SQSClientConfig } from "@aws-sdk/client-sqs";
+import "dotenv/config";
 
-export function configureAWS() {
-  AWS.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-  });
-}
+const awsConfig: DynamoDBClientConfig & SQSClientConfig = {
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+  },
+  region: process.env.AWS_REGION || "",
+};
 
-export function Sqs() {
-  const sqs = new AWS.SQS();
-  return sqs;
-}
-
-export function DynamoDB() {
-  const dynamoDB = new AWS.DynamoDB.DocumentClient();
-  return dynamoDB;
-}
+export const dynamoClient = new DynamoDBClient(awsConfig);
+export const sqsClient = new SQSClient(awsConfig);
